@@ -3,267 +3,66 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Python Factory Lab</title>
-
-0.27.2/full/pyodide.js"></script>
-
+<title>Python Factory Lab v2</title>
+<script src="https://cdn.jsdelivr.net/pyodide/v0.27.2/full/pyodide.js"></script>
 <style>
-body{
-    margin:0;
-    font-family:sans-serif;
-    background:#f5f7fa;
-}
-
-header{
-    background:#1f4b99;
-    color:white;
-    padding:15px 20px;
-}
-
-.container{
-    max-width:1100px;
-    margin:auto;
-    padding:20px;
-}
-
-.card{
-    background:white;
-    border-radius:10px;
-    padding:20px;
-    margin-bottom:20px;
-    box-shadow:0 2px 5px rgba(0,0,0,0.1);
-}
-
-textarea{
-    width:100%;
-    height:220px;
-    font-family:Consolas, monospace;
-    font-size:16px;
-    padding:10px;
-    box-sizing:border-box;
-}
-
-button{
-    padding:10px 20px;
-    margin-right:10px;
-    margin-top:10px;
-    cursor:pointer;
-}
-
-pre{
-    background:#f0f0f0;
-    padding:10px;
-    border-radius:5px;
-}
-
-#output{
-    background:#111;
-    color:#00ff88;
-    min-height:120px;
-    padding:10px;
-    border-radius:5px;
-    white-space:pre-wrap;
-}
-
-.loading{
-    color:#ff9800;
-    font-weight:bold;
-}
-
-.success{
-    color:green;
-    font-weight:bold;
-}
+body{font-family:Arial,sans-serif;background:#f5f7fa;margin:0}
+header{background:#1f4b99;color:#fff;padding:14px 20px}
+.main{max-width:1100px;margin:auto;padding:20px}
+.card{background:#fff;padding:20px;border-radius:10px;box-shadow:0 2px 5px rgba(0,0,0,.1);margin-bottom:16px}
+textarea{width:100%;height:220px;font-family:Consolas,monospace}
+button{padding:10px 16px;margin:5px}
+pre{background:#f0f0f0;padding:10px;border-radius:6px}
+#output{background:#111;color:#00ff88;padding:10px;min-height:120px;white-space:pre-wrap;border-radius:6px}
 </style>
 </head>
-
 <body>
-
-<header>
-<h2>Python Factory Lab</h2>
-</header>
-
-<div class="container">
-
+<header><h2>Python Factory Lab v2</h2></header>
+<div class="main">
 <div class="card">
-
 <h3>ステージ</h3>
-
 <select id="stage">
 <option value="0">1. Hello World</option>
-<option value="1">2. 名前を表示</option>
+<option value="1">2. 文字を表示</option>
 <option value="2">3. 計算してみよう</option>
-<option value="3">4. 変数を使ってみよう</option>
+<option value="3">4. 変数を使おう</option>
 </select>
-
 <h3>ミッション</h3>
 <div id="mission"></div>
-
 <h3>お手本</h3>
 <pre id="sample"></pre>
-
-<button onclick="copySample()">
-お手本をコピー
-</button>
-
+<button onclick="copySample()">お手本をコピー</button>
 </div>
-
 <div class="card">
-
 <h3>コード入力</h3>
-
-<textarea id="code"></textarea>
-
-<button onclick="runCode()">
-実行
-</button>
-
+<textarea id="code"></textarea><br>
+<button onclick="runCode()">実行</button>
 </div>
-
 <div class="card">
-
 <h3>結果</h3>
-
-<div id="output">
-Python環境を準備中...
+<div id="output">Python環境を準備中...</div>
 </div>
-
 </div>
-
-</div>
-
 <script>
-
-const stages = [
-{
-mission: "Hello Worldを表示してみよう",
-sample: 'print("Hello World")'
-},
-{
-mission: "好きな文字を表示してみよう",
-sample: 'print("こんにちは")'
-},
-{
-mission: "計算してみよう",
-sample: 'print(10 + 20)'
-},
-{
-mission: "変数を表示してみよう",
-sample: 'name = \"サンプル\"\\nprint(name)'
-}
+const stages=[
+{mission:'Hello Worldを表示しよう',sample:'print("Hello World")'},
+{mission:'好きな文字を表示しよう',sample:'print("こんにちは")'},
+{mission:'10+20を計算しよう',sample:'print(10+20)'},
+{mission:'変数を表示しよう',sample:'name="サンプル"
+print(name)'}
 ];
-
-const stage =
-document.getElementById("stage");
-
-const mission =
-document.getElementById("mission");
-
-const sample =
-document.getElementById("sample");
-
-const code =
-document.getElementById("code");
-
-const output =
-document.getElementById("output");
-
-let pyodide = null;
-
-function loadStage(){
-
-const s =
-stages[stage.value];
-
-mission.textContent =
-s.mission;
-
-sample.textContent =
-s.sample;
-
-code.value =
-s.sample;
-
-}
-
-function copySample(){
-
-code.value =
-sample.textContent;
-
-}
-
-async function initPython(){
-
-output.innerHTML =
-'<span class="loading">Python環境を読み込んでいます...</span>';
-
-pyodide =
-await loadPyodide();
-
-output.innerHTML =
-'<span class="success">✅ Python環境の準備完了</span>';
-
-}
-
-async function runCode(){
-
-if(!pyodide){
-
-output.textContent =
-"まだPython環境を準備中です";
-
-return;
-
-}
-
-let result = "";
-
-try{
-
-pyodide.setStdout({
-batched: (text) => {
-result += text + "\\n";
-}
-});
-
-await pyodide.runPythonAsync(
-code.value
-);
-
-if(result.trim() === ""){
-
-output.textContent =
-"(出力なし)";
-
-}
-else{
-
-output.textContent =
-result;
-
-}
-
-}
-catch(error){
-
-output.textContent =
-error;
-
-}
-
-}
-
-stage.addEventListener(
-"change",
-loadStage
-);
-
-loadStage();
-
-initPython();
-
+const stage=document.getElementById('stage');
+const mission=document.getElementById('mission');
+const sample=document.getElementById('sample');
+const code=document.getElementById('code');
+const output=document.getElementById('output');
+let pyodide=null;
+function loadStage(){const s=stages[stage.value];mission.textContent=s.mission;sample.textContent=s.sample;code.value=s.sample;}
+function copySample(){code.value=sample.textContent;}
+async function initPython(){output.textContent='Python環境を読み込み中...';pyodide=await loadPyodide();output.textContent='✅ Python環境の準備完了';}
+async function runCode(){if(!pyodide){output.textContent='まだ準備中です';return;}let result='';try{pyodide.setStdout({batched:(t)=>result+=t+'
+'});await pyodide.runPythonAsync(code.value);output.textContent=result||'(出力なし)';}catch(e){output.textContent=e.toString();}}
+stage.addEventListener('change',loadStage);loadStage();initPython();
 </script>
-
 </body>
 </html>
