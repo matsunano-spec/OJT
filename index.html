@@ -1,49 +1,7 @@
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Python Drawing Lab</title>
-<style>
-body{margin:0;font-family:Segoe UI,sans-serif;background:#0f172a;color:#e5e7eb}
-.header{background:#111827;padding:16px 24px}.wrap{max-width:1400px;margin:auto;padding:20px}
-.grid{display:grid;grid-template-columns:280px 1fr 420px;gap:20px}.card{background:#1e293b;border-radius:16px;padding:16px}
-.progress{height:18px;background:#334155;border-radius:20px}.bar{height:100%;background:#22c55e;border-radius:20px;width:5%}
-textarea{width:100%;height:180px;background:#020617;color:#7dd3fc;border:0;border-radius:10px;padding:12px;font-family:Consolas}
-button{background:#2563eb;color:#fff;border:0;padding:10px 14px;border-radius:8px;cursor:pointer;margin:5px}
-#sample,#output{background:#020617;padding:12px;border-radius:10px;white-space:pre-wrap}
-svg{background:#fff;border-radius:12px;width:100%;height:420px}
-</style></head><body>
-<div class="header"><h2>Python Drawing Lab</h2><div>見本を写して、実行して、絵を完成させよう</div></div>
-<div class="wrap"><div class="grid">
-<div class="card"><h3>進捗</h3><div id="step">1 / 20</div><div class="progress"><div id="bar" class="bar"></div></div><h3>ステージ</h3><div id="list"></div></div>
-<div class="card"><h2 id="title"></h2><p id="mission"></p><h3>お手本</h3><div id="sample"></div><button onclick="copySample()">お手本をコピー</button><h3>コード入力</h3><textarea id="code"></textarea><br><button onclick="runCode()">実行</button><button onclick="nextStage()">次へ</button><h3>結果</h3><div id="output">実行待ち</div></div>
-<div class="card"><h3>プレビュー</h3><svg id="canvas" viewBox="0 0 400 400"></svg></div>
-</div></div>
-<script>
-const stages=[
-{t:'Hello World',m:'お手本をコピーして実行',s:'print("Hello, World!")'},
-{t:'あいさつ',m:'文字を表示しよう',s:'print("こんにちは")'},
-{t:'Circle',m:'円を描こう',s:'circle()'},
-{t:'Square',m:'四角を描こう',s:'square()'},
-{t:'Star',m:'星を描こう',s:'star()'},
-{t:'House',m:'家を描こう',s:'house()'},
-{t:'Tree',m:'木を描こう',s:'tree()'},
-{t:'Sun',m:'太陽を描こう',s:'sun()'}
-];
-let current=0;
-const title=document.getElementById('title');const mission=document.getElementById('mission');const sample=document.getElementById('sample');const code=document.getElementById('code');const output=document.getElementById('output');
-function load(){let s=stages[current];title.textContent=s.t;mission.textContent=s.m;sample.textContent=s.s;document.getElementById('step').textContent=(current+1)+' / 20';document.getElementById('bar').style.width=((current+1)*5)+'%';document.getElementById('list').innerHTML=stages.map((x,i)=>((i==current)?'▶ ':'')+x.t).join('<br>');}
-function copySample(){code.value=sample.textContent;output.textContent='お手本をコピーしました';}
-function nextStage(){if(current<stages.length-1){current++;load();code.value='';output.textContent='次のステージへ';}}
-function runCode(){let t=code.value;let svg=document.getElementById('canvas');svg.innerHTML='';output.textContent='✅ 実行成功';
-if(t.includes('print(')){let m=t.match(/print\("(.*)"\)/); if(m){output.textContent=m[1];}}
-if(t.includes('circle()')) svg.innerHTML+='<circle cx="80" cy="100" r="40" fill="#3b82f6"/>';
-if(t.includes('square()')) svg.innerHTML+='<rect x="150" y="60" width="80" height="80" fill="#22c55e"/>';
-if(t.includes('star()')) svg.innerHTML+='<polygon points="300,60 315,100 355,100 322,122 335,160 300,138 265,160 278,122 245,100 285,100" fill="gold"/>';
-if(t.includes('house()')) svg.innerHTML+='<rect x="220" y="240" width="100" height="70" fill="#f59e0b"/><polygon points="210,240 270,190 330,240" fill="#dc2626"/>';
-if(t.includes('tree()')) svg.innerHTML+='<rect x="90" y="260" width="20" height="60" fill="#7c3f00"/><circle cx="100" cy="240" r="35" fill="green"/>';
-if(t.includes('sun()')) svg.innerHTML+='<circle cx="330" cy="70" r="35" fill="yellow"/>';
-}
-load();
-</script></body></html>
+<!DOCTYPE html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Python Drawing Lab v3</title><style>body{margin:0;font-family:Segoe UI,sans-serif;background:#0f172a;color:#e2e8f0}.header{background:#111827;padding:16px 24px}.wrap{max-width:1400px;margin:auto;padding:20px}.grid{display:grid;grid-template-columns:280px 1fr 420px;gap:20px}.card{background:#1e293b;border-radius:16px;padding:16px}.stage{padding:8px;border-radius:8px;cursor:pointer}.active{background:#2563eb}.progress{height:18px;background:#334155;border-radius:20px}.bar{height:100%;background:#22c55e;border-radius:20px;width:5%}textarea{width:100%;height:180px;background:#020617;color:#7dd3fc;border:0;border-radius:10px;padding:12px;font-family:Consolas}button{background:#2563eb;color:#fff;border:0;padding:10px 14px;border-radius:8px;cursor:pointer;margin:5px}#sample,#output{background:#020617;padding:12px;border-radius:10px;white-space:pre-wrap}svg{background:#fff;border-radius:12px;width:100%;height:420px}</style></head><body><div class="header"><h2>Python Drawing Lab v3</h2><div>文字 → 図形 → 色 → 移動 → 回転 → 拡大 を体験</div></div><div class="wrap"><div class="grid"><div class="card"><h3>進捗</h3><div id="step"></div><div class="progress"><div id="bar" class="bar"></div></div><h3>ステージ</h3><div id="stages"></div></div><div class="card"><h2 id="title"></h2><div id="mission"></div><h3>お手本</h3><div id="sample"></div><button onclick="copySample()">お手本をコピー</button><h3>コード入力</h3><textarea id="code"></textarea><br><button onclick="runCode()">実行</button><button onclick="prevStage()">戻る</button><button onclick="nextStage()">次へ</button><h3>結果</h3><div id="output">実行待ち</div></div><div class="card"><h3>プレビュー</h3><svg id="svg" viewBox="0 0 400 400"></svg></div></div></div><script>const stages=[['Hello World','print("Hello World!")'],['こんにちは','print("こんにちは")'],['Circle','circle()'],['Color','circle()
+color("red")'],['Move','circle()
+move_right()'],['Rotate','star()
+rotate(45)'],['Grow','square()
+grow()'],['Landscape','house()
+tree()
+sun()']];let cur=0;const t=title,m=mission,s=sample,c=code,o=output;function render(){t.textContent=stages[cur][0];m.textContent='ステージ '+(cur+1);s.textContent=stages[cur][1];document.getElementById('step').textContent=(cur+1)+' / '+stages.length;document.getElementById('bar').style.width=((cur+1)/stages.length*100)+'%';document.getElementById('stages').innerHTML=stages.map((x,i)=>`<div class="stage ${i==cur?'active':''}" onclick="gotoStage(${i})">${i+1}. ${x[0]}</div>`).join('');}function gotoStage(i){cur=i;render()}function copySample(){c.value=s.textContent;o.textContent='コピーしました';}function nextStage(){if(cur<stages.length-1){cur++;render();}}function prevStage(){if(cur>0){cur--;render();}}function runCode(){let txt=c.value;let svg=document.getElementById('svg');svg.innerHTML='';let x=200,y=200,color='dodgerblue',scale=1,rot=0,shape='circle';if(txt.includes('star()'))shape='star';if(txt.includes('square()'))shape='square';if(txt.includes('house()')){svg.innerHTML+='<rect x="220" y="220" width="100" height="70" fill="orange"/><polygon points="210,220 270,170 330,220" fill="red"/>';}if(txt.includes('tree()')){svg.innerHTML+='<rect x="90" y="260" width="20" height="60" fill="brown"/><circle cx="100" cy="240" r="35" fill="green"/>';}if(txt.includes('sun()')){svg.innerHTML+='<circle cx="330" cy="70" r="35" fill="gold"/>';}let m1=txt.match(/color\("(.*?)"\)/);if(m1)color=m1[1];if(txt.includes('move_right()'))x+=80;if(txt.includes('move_left()'))x-=80;if(txt.includes('move_up()'))y-=80;if(txt.includes('move_down()'))y+=80;let m2=txt.match(/rotate\((\d+)\)/);if(m2)rot=parseInt(m2[1]);if(txt.includes('grow()'))scale=1.8;if(shape=='circle')svg.innerHTML+=`<circle cx="${x}" cy="${y}" r="${30*scale}" fill="${color}"/>`;if(shape=='square')svg.innerHTML+=`<rect x="${x-30}" y="${y-30}" width="${60*scale}" height="${60*scale}" fill="${color}" transform="rotate(${rot} ${x} ${y})"/>`;if(shape=='star')svg.innerHTML+=`<polygon points="200,150 215,190 255,190 222,212 235,250 200,228 165,250 178,212 145,190 185,190" fill="${color}" transform="translate(${x-200},${y-200}) rotate(${rot} 200 200) scale(${scale})"/>`;let pm=txt.match(/print\("(.*)"\)/);o.textContent=pm?pm[1]:'✅ 実行しました';}render();copySample();</script></body></html>
