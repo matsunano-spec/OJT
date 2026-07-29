@@ -2,7 +2,9 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Python Factory Lab</title>
+
 <style>
 body{
     font-family:sans-serif;
@@ -29,13 +31,40 @@ header{
     box-shadow:0 2px 5px rgba(0,0,0,0.1);
 }
 
+textarea{
+    width:100%;
+    height:150px;
+    font-family:Consolas, monospace;
+    font-size:16px;
+}
+
+button{
+    padding:10px 20px;
+    margin-top:10px;
+    cursor:pointer;
+}
+
 pre{
     background:#f0f0f0;
     padding:10px;
     border-radius:5px;
 }
+
+#result{
+    background:#222;
+    color:#00ff88;
+    padding:10px;
+    min-height:60px;
+    border-radius:5px;
+}
+
+.success{
+    color:green;
+    font-weight:bold;
+}
 </style>
 </head>
+
 <body>
 
 <header>
@@ -61,6 +90,20 @@ pre{
 <h3>お手本</h3>
 <pre id="sample"></pre>
 
+<button onclick="copySample()">お手本をコピー</button>
+
+<h3>コード入力</h3>
+<textarea id="code"></textarea>
+
+<br>
+<button onclick="runCode()">実行</button>
+
+<h3>結果</h3>
+<div id="result"></div>
+
+<h3>判定</h3>
+<div id="judge"></div>
+
 </div>
 
 </div>
@@ -70,30 +113,80 @@ pre{
 const stages = [
 {
  mission:"Hello Worldを表示してみよう",
- sample:'print("Hello World")'
+ sample:'print("Hello World")',
+ answer:"Hello World"
 },
 {
  mission:"自分の名前を表示してみよう",
- sample:'print("松永さん")'
+ sample:'print("松永さん")',
+ answer:"松永さん"
 },
 {
  mission:"10+20を計算してみよう",
- sample:'print(10+20)'
+ sample:'print(10+20)',
+ answer:"30"
 },
 {
  mission:"変数を表示してみよう",
- sample:'name = "Factory"\\nprint(name)'
+ sample:'name = \"Factory\"\\nprint(name)',
+ answer:"Factory"
 }
 ];
 
 const stage = document.getElementById("stage");
 const mission = document.getElementById("mission");
 const sample = document.getElementById("sample");
+const code = document.getElementById("code");
+const result = document.getElementById("result");
+const judge = document.getElementById("judge");
 
 function loadStage() {
     const s = stages[stage.value];
+
     mission.textContent = s.mission;
     sample.textContent = s.sample;
+    code.value = "";
+    result.textContent = "";
+    judge.textContent = "";
+}
+
+function copySample(){
+    code.value = sample.textContent;
+}
+
+function runCode(){
+
+    const text = code.value;
+    const current = stages[stage.value];
+
+    let output = "";
+
+    if(text.includes('print("Hello World")')){
+        output = "Hello World";
+    }
+    else if(text.includes('print("松永さん")')){
+        output = "松永さん";
+    }
+    else if(text.includes('print(10+20)')){
+        output = "30";
+    }
+    else if(text.includes('print(name)')){
+        output = "Factory";
+    }
+    else{
+        output = "実行結果を判定できません";
+    }
+
+    result.textContent = output;
+
+    if(output === current.answer){
+        judge.innerHTML =
+            '<div class="success">✅ クリア！</div>';
+    }
+    else{
+        judge.innerHTML =
+            '<div>❌ もう一度試してみよう</div>';
+    }
 }
 
 stage.addEventListener("change", loadStage);
