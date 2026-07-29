@@ -1,47 +1,49 @@
 <!DOCTYPE html>
-<html lang="ja"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Python Drawing Lab</title><style>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Python Drawing Lab</title>
+<style>
 body{margin:0;font-family:Segoe UI,sans-serif;background:#0f172a;color:#e5e7eb}
-.header{padding:16px 24px;background:#111827}.wrap{max-width:1400px;margin:auto;padding:20px}
-.grid{display:grid;grid-template-columns:320px 1fr 420px;gap:20px}.card{background:#1e293b;border-radius:16px;padding:16px}
-.progress{height:18px;background:#334155;border-radius:9px;overflow:hidden}.bar{height:100%;width:5%;background:#22c55e}
-.code{background:#020617;color:#7dd3fc;padding:12px;border-radius:10px;min-height:130px;font-family:Consolas,monospace}
-textarea{width:100%;height:180px;background:#020617;color:#7dd3fc;border:0;border-radius:10px;padding:12px}
-button{background:#2563eb;color:#fff;border:0;padding:10px 14px;border-radius:8px;cursor:pointer;margin-right:8px}
-#canvas{background:white;border-radius:12px;padding:10px;height:420px}.badge{background:#334155;padding:8px;border-radius:8px;margin:6px 0}
-</style></head><body><div class="header"><h2>Python Drawing Lab</h2><div>見本を写して、実行して、変化を楽しむ</div></div><div class="wrap"><div class="grid">
-<div class="card"><h3>進捗</h3><div id="ptext">1 / 20</div><div class="progress"><div id="pbar" class="bar"></div></div><h3>バッジ</h3><div class="badge">🏅 はじめての実行</div><div class="badge">⭐ 図形マスター</div><h3>ステージ</h3><div id="stlist"></div></div>
-<div class="card"><h2 id="title"></h2><p id="mission"></p><h3>お手本</h3><div id="sample" class="code"></div><button onclick="copySample()">お手本をコピー</button><h3>コード入力</h3><textarea id="code"></textarea><br><button onclick="runCode()">実行</button><button onclick="nextStage()">次へ</button><div id="msg"></div></div>
-<div class="card"><h3>プレビュー</h3><svg id="canvas" viewBox="0 0 400 400"></svg><div id="clear"></div></div>
+.header{background:#111827;padding:16px 24px}.wrap{max-width:1400px;margin:auto;padding:20px}
+.grid{display:grid;grid-template-columns:280px 1fr 420px;gap:20px}.card{background:#1e293b;border-radius:16px;padding:16px}
+.progress{height:18px;background:#334155;border-radius:20px}.bar{height:100%;background:#22c55e;border-radius:20px;width:5%}
+textarea{width:100%;height:180px;background:#020617;color:#7dd3fc;border:0;border-radius:10px;padding:12px;font-family:Consolas}
+button{background:#2563eb;color:#fff;border:0;padding:10px 14px;border-radius:8px;cursor:pointer;margin:5px}
+#sample,#output{background:#020617;padding:12px;border-radius:10px;white-space:pre-wrap}
+svg{background:#fff;border-radius:12px;width:100%;height:420px}
+</style></head><body>
+<div class="header"><h2>Python Drawing Lab</h2><div>見本を写して、実行して、絵を完成させよう</div></div>
+<div class="wrap"><div class="grid">
+<div class="card"><h3>進捗</h3><div id="step">1 / 20</div><div class="progress"><div id="bar" class="bar"></div></div><h3>ステージ</h3><div id="list"></div></div>
+<div class="card"><h2 id="title"></h2><p id="mission"></p><h3>お手本</h3><div id="sample"></div><button onclick="copySample()">お手本をコピー</button><h3>コード入力</h3><textarea id="code"></textarea><br><button onclick="runCode()">実行</button><button onclick="nextStage()">次へ</button><h3>結果</h3><div id="output">実行待ち</div></div>
+<div class="card"><h3>プレビュー</h3><svg id="canvas" viewBox="0 0 400 400"></svg></div>
 </div></div>
 <script>
 const stages=[
-['1 Hello World','print("Hello")','文字が表示される体験'],
-['2 Circle','circle()','円を描こう'],
-['3 Square','square()','四角を描こう'],
-['4 Star','star()','星を描こう'],
-['5 Circle x3','for i in range(3): circle()','繰り返しを体験'],
-['6 House','house()','家を描こう'],
-['7 Tree','tree()','木を描こう'],
-['8 Sun','sun()','太陽を描こう'],
-['9 Landscape','house()
-tree()
-sun()','風景づくり'],
-['10-20 Free','circle()','自由に変更してみよう']
+{t:'Hello World',m:'お手本をコピーして実行',s:'print("Hello, World!")'},
+{t:'あいさつ',m:'文字を表示しよう',s:'print("こんにちは")'},
+{t:'Circle',m:'円を描こう',s:'circle()'},
+{t:'Square',m:'四角を描こう',s:'square()'},
+{t:'Star',m:'星を描こう',s:'star()'},
+{t:'House',m:'家を描こう',s:'house()'},
+{t:'Tree',m:'木を描こう',s:'tree()'},
+{t:'Sun',m:'太陽を描こう',s:'sun()'}
 ];
-let idx=0;
-function render(){title.textContent=stages[idx][0];sample.textContent=stages[idx][1];mission.textContent=stages[idx][2];ptext.textContent=(idx+1)+' / 20';pbar.style.width=((idx+1)*5)+'%';document.getElementById('stlist').innerHTML=stages.map((s,i)=>((i===idx)?'▶ ':'')+s[0]).join('<br>');}
-function copySample(){code.value=sample.textContent;}
-function nextStage(){if(idx<stages.length-1){idx++;render();copySample();}}
-function runCode(){const t=code.value;const svg=document.getElementById('canvas');svg.innerHTML='';let x=40;
-if(t.includes('Hello')) svg.innerHTML+='<text x="20" y="40" font-size="26">Hello</text>';
-const add=(s)=>svg.innerHTML+=s;
-const count=(t.match(/circle\(/g)||[]).length + ((t.includes('range(3)'))?3:0);
- for(let i=0;i<count;i++){add(`<circle cx="${50+i*70}" cy="120" r="25" fill="#3b82f6"/>`)}
- if(t.includes('square()')) add('<rect x="40" y="180" width="60" height="60" fill="#22c55e"/>');
- if(t.includes('star()')) add('<polygon points="180,180 190,210 220,210 195,225 205,255 180,235 155,255 165,225 140,210 170,210" fill="gold"/>');
- if(t.includes('house()')) add('<rect x="260" y="210" width="80" height="60" fill="#f59e0b"/><polygon points="250,210 300,170 350,210" fill="#dc2626"/>');
- if(t.includes('tree()')) add('<rect x="120" y="260" width="20" height="50" fill="#7c3f00"/><circle cx="130" cy="240" r="30" fill="green"/>');
- if(t.includes('sun()')) add('<circle cx="330" cy="70" r="35" fill="yellow"/>');
- clear.innerHTML='✅ 実行成功';}
-render();copySample();
+let current=0;
+const title=document.getElementById('title');const mission=document.getElementById('mission');const sample=document.getElementById('sample');const code=document.getElementById('code');const output=document.getElementById('output');
+function load(){let s=stages[current];title.textContent=s.t;mission.textContent=s.m;sample.textContent=s.s;document.getElementById('step').textContent=(current+1)+' / 20';document.getElementById('bar').style.width=((current+1)*5)+'%';document.getElementById('list').innerHTML=stages.map((x,i)=>((i==current)?'▶ ':'')+x.t).join('<br>');}
+function copySample(){code.value=sample.textContent;output.textContent='お手本をコピーしました';}
+function nextStage(){if(current<stages.length-1){current++;load();code.value='';output.textContent='次のステージへ';}}
+function runCode(){let t=code.value;let svg=document.getElementById('canvas');svg.innerHTML='';output.textContent='✅ 実行成功';
+if(t.includes('print(')){let m=t.match(/print\("(.*)"\)/); if(m){output.textContent=m[1];}}
+if(t.includes('circle()')) svg.innerHTML+='<circle cx="80" cy="100" r="40" fill="#3b82f6"/>';
+if(t.includes('square()')) svg.innerHTML+='<rect x="150" y="60" width="80" height="80" fill="#22c55e"/>';
+if(t.includes('star()')) svg.innerHTML+='<polygon points="300,60 315,100 355,100 322,122 335,160 300,138 265,160 278,122 245,100 285,100" fill="gold"/>';
+if(t.includes('house()')) svg.innerHTML+='<rect x="220" y="240" width="100" height="70" fill="#f59e0b"/><polygon points="210,240 270,190 330,240" fill="#dc2626"/>';
+if(t.includes('tree()')) svg.innerHTML+='<rect x="90" y="260" width="20" height="60" fill="#7c3f00"/><circle cx="100" cy="240" r="35" fill="green"/>';
+if(t.includes('sun()')) svg.innerHTML+='<circle cx="330" cy="70" r="35" fill="yellow"/>';
+}
+load();
 </script></body></html>
