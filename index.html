@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>Python Factory Lab</title>
+<style>
+body{
+    font-family:sans-serif;
+    background:#f5f7fa;
+    margin:0;
+}
+
+header{
+    background:#1f4b99;
+    color:white;
+    padding:15px;
+}
+
+.container{
+    max-width:1000px;
+    margin:auto;
+    padding:20px;
+}
+
+.card{
+    background:white;
+    padding:20px;
+    border-radius:10px;
+    box-shadow:0 2px 5px rgba(0,0,0,0.1);
+}
+
+pre{
+    background:#f0f0f0;
+    padding:10px;
+    border-radius:5px;
+}
+</style>
+</head>
+<body>
+
+<header>
+<h2>Python Factory Lab</h2>
+</header>
+
+<div class="container">
+
+<div class="card">
+
+<h3>ステージ</h3>
+
+<select id="stage">
+    <option value="0">1. Hello World</option>
+    <option value="1">2. 名前を表示</option>
+    <option value="2">3. 計算してみよう</option>
+    <option value="3">4. 変数を使ってみよう</option>
+</select>
+
+<h3>ミッション</h3>
+<div id="mission"></div>
+
+<h3>お手本</h3>
+<pre id="sample"></pre>
+
+</div>
+
+</div>
+
+<script>
+
+const stages = [
+{
+ mission:"Hello Worldを表示してみよう",
+ sample:'print("Hello World")'
+},
+{
+ mission:"自分の名前を表示してみよう",
+ sample:'print("松永さん")'
+},
+{
+ mission:"10+20を計算してみよう",
+ sample:'print(10+20)'
+},
+{
+ mission:"変数を表示してみよう",
+ sample:'name = "Factory"\\nprint(name)'
+}
+];
+
+const stage = document.getElementById("stage");
+const mission = document.getElementById("mission");
+const sample = document.getElementById("sample");
+
+function loadStage() {
+    const s = stages[stage.value];
+    mission.textContent = s.mission;
+    sample.textContent = s.sample;
+}
+
+stage.addEventListener("change", loadStage);
+
+loadStage();
+
+</script>
+
+</body>
+</html>
