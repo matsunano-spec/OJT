@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SVG PLAYGROUND</title>
+<style>
+:root{--navy:#172033;--indigo:#4f46e5;--violet:#7c3aed;--cyan:#06b6d4;--pink:#ec4899;--orange:#f97316}
+*{box-sizing:border-box}body{margin:0;min-height:100vh;font-family:"Yu Gothic","Meiryo",sans-serif;color:var(--navy);background:radial-gradient(circle at 6% 0,#fef3c7,transparent 22%),radial-gradient(circle at 96% 4%,#fbcfe8,transparent 24%),linear-gradient(135deg,#f5f3ff,#ecfeff)}.app{max-width:1480px;margin:auto;padding:15px 20px 22px}.title{display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:11px}.title span{padding:7px 10px;border-radius:11px;background:linear-gradient(135deg,var(--cyan),var(--violet));color:#fff;font-size:22px;font-weight:950;letter-spacing:.06em}.title strong{font-size:31px;letter-spacing:.1em;color:#312e81;font-weight:950}.learning-title{text-align:center;margin:0 0 4px;color:#172554;font-size:24px;line-height:1.35;font-weight:1000}.learning-subtitle{text-align:center;margin:0 0 12px;color:#536174;font-size:13px;font-weight:800}.modes{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:10px}.mode{position:relative;text-align:left;border:3px solid #fff;background:#ffffffca;border-radius:19px;padding:12px 15px;cursor:pointer;box-shadow:0 8px 20px #6366f120;transition:.18s}.mode:hover{transform:translateY(-2px)}.mode.active{border-color:var(--violet);background:linear-gradient(135deg,#ede9fe,#fff)}.mode b{font-size:17px}.mode small{display:block;margin-top:2px;color:#64748b;font-weight:700}.mode.active:after{content:"選択中";position:absolute;right:10px;top:9px;padding:3px 8px;border-radius:999px;background:var(--violet);color:#fff;font-size:10px;font-weight:900}.controlbar{display:grid;grid-template-columns:1fr;align-items:start;gap:8px 12px;min-height:64px;margin-bottom:10px;padding:9px 12px;border:2px solid #fff;border-radius:19px;background:#ffffffd6;box-shadow:0 8px 20px #64748b1c;overflow-x:auto}.control-label{grid-row:1 / span 2;align-self:center;font-weight:900;color:#312e81}.targetbar{display:flex;align-items:center;gap:8px;margin-bottom:7px;padding:6px 8px;border-radius:12px;background:#f8fafc}.targetbar label{font-size:11px;font-weight:900;color:#64748b}.target-select{min-width:240px;max-width:430px;height:34px;border:2px solid #c4b5fd;border-radius:10px;background:#fff;padding:0 9px;color:#312e81;font-weight:800;outline:none}.target-select:focus{border-color:#7c3aed;box-shadow:0 0 0 3px #ddd6fe}.target-note{font-size:11px;color:#64748b;font-weight:700}.control-buttons{display:flex;flex-direction:column;gap:7px;min-width:0}.control-row{display:flex;align-items:center;gap:7px;flex-wrap:wrap}.row-label{min-width:58px;color:#64748b;font-size:11px;font-weight:900}.controlbar .help{grid-column:1;margin-left:0;max-width:none;min-width:0}.action{border:2px solid transparent;border-radius:999px;padding:9px 13px;background:#ede9fe;color:#4338ca;font-weight:900;cursor:pointer;white-space:nowrap;transition:transform .15s,box-shadow .15s,filter .15s,border-color .15s}.action:hover{transform:translateY(-2px);box-shadow:0 6px 14px #6366f133;filter:brightness(.98);border-color:#a78bfa}.action:active{transform:translateY(0) scale(.97)}.action.active,.action.selected{background:#7c3aed;color:#fff;border-color:#5b21b6;box-shadow:0 0 0 3px #c4b5fd,0 6px 14px #7c3aed33}.action.orange{background:#ffedd5;color:#c2410c}.action.green{background:#dcfce7;color:#15803d}.action.color-blue{background:#dbeafe;color:#1d4ed8}.action.color-pink{background:#fce7f3;color:#be185d}.action.color-yellow{background:#fef9c3;color:#a16207}.action.color-blue:hover{background:#bfdbfe}.action.color-pink:hover{background:#fbcfe8}.action.green:hover{background:#bbf7d0}.action.color-yellow:hover{background:#fef08a}.action.stop{background:#fee2e2;color:#b91c1c}.action.stop:hover{background:#fecaca;border-color:#f87171}.divider{width:1px;height:30px;background:#cbd5e1;margin:0 2px}.move-group{display:inline-flex;gap:4px;padding:3px;border-radius:999px;background:#f1f5f9}.move-group .action{min-width:38px;padding:7px 10px}.help{margin-left:auto;min-width:245px;max-width:530px;color:#64748b;font-size:12px;font-weight:700;line-height:1.45}.workspace{display:grid;grid-template-columns:1fr 1fr;gap:14px}.panel{overflow:hidden;border:2px solid #fff;border-radius:24px;box-shadow:0 16px 38px #6366f126}.editor-panel{background:#020617}.preview-panel{background:#ffffffa8}.panelbar{height:50px;display:flex;align-items:center;justify-content:space-between;padding:0 15px;font-weight:900}.editor-panel .panelbar{background:#111827;color:#fff}.preview-panel .panelbar{background:#ffffff90}.tools{display:flex;gap:6px}.btn{border:0;border-radius:999px;padding:8px 13px;font-weight:900;cursor:pointer;background:#e2e8f0;color:#253047}.btn.dark{background:#334155;color:#fff}.btn.primary{background:linear-gradient(90deg,var(--cyan),var(--violet));color:#fff;box-shadow:0 6px 16px #7c3aed3d}.editbody,.previewbody{height:590px;padding:13px}.editbody{display:flex;flex-direction:column;gap:9px}.editor{min-height:0;flex:1;width:100%;resize:none;border:1px solid #334155;border-radius:15px;background:#020617;color:#cffafe;padding:14px;font:13px/1.62 Consolas,monospace;outline:none;tab-size:2}.editor:focus{border-color:#22d3ee;box-shadow:0 0 0 4px #22d3ee22}.editor.flash{animation:flash .75s}@keyframes flash{50%{border-color:#facc15;box-shadow:0 0 0 7px #facc1550}}.actionrow{display:flex;justify-content:space-between;align-items:center;gap:10px}.status{font-size:13px;font-weight:900;color:#34d399}.status.err{color:#fb7185}.checker{height:100%;border:4px solid #fff;border-radius:20px;padding:10px;background-color:#fff;background-image:linear-gradient(45deg,#f1f5f9 25%,transparent 25%),linear-gradient(-45deg,#f1f5f9 25%,transparent 25%),linear-gradient(45deg,transparent 75%,#f1f5f9 75%),linear-gradient(-45deg,transparent 75%,#f1f5f9 75%);background-size:26px 26px;background-position:0 0,0 13px,13px -13px,-13px 0}.preview{width:100%;height:100%;border:0;border-radius:14px;background:#fff}.toast{position:fixed;right:18px;bottom:18px;z-index:5;display:none;padding:12px 17px;border-radius:13px;background:#111827;color:#fff;font-weight:900;box-shadow:0 12px 28px #0004}.toast.show{display:block}@media(max-width:1000px){.modes{grid-template-columns:1fr}.controlbar{grid-template-columns:1fr}.control-label{grid-row:auto}.controlbar .help{grid-column:1}.help{margin-left:0;max-width:none}.workspace{grid-template-columns:1fr}.editbody,.previewbody{height:520px}}@media(max-width:560px){.title strong{font-size:24px}.title span{font-size:18px}.app{padding:10px}.control-buttons{flex-wrap:nowrap}}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="learning-title">図形を動かして、SVGコードの変化を見てみよう</header>
+  <p class="learning-subtitle">右側の図形をクリックしてから、移動・大きさ・色のボタンを押してください。左側のコードで、変わった数値や色を確認できます。</p>
+  <nav class="modes">
+    <button class="mode active" data-mode="shapes"><b>● ■ 図形を描く</b><small>タグを押して、空のキャンバスへ図形を追加</small></button>
+    <button class="mode" data-mode="move"><b>➜ 動かす</b><small>ボタンを押して移動タグを追加</small></button>
+    <button class="mode" data-mode="pulse"><b>⚡ ↻ 点滅・回転</b><small>ボタンを押してアニメーションを追加</small></button>
+  </nav>
+  <section class="controlbar">
+    <div id="controlButtons" class="control-buttons"></div>
+    <div id="help" class="help"></div>
+  </section>
+  <div class="workspace">
+    <section class="panel editor-panel">
+      <div class="panelbar"><span>⌨ SVGコード</span><div class="tools"><button id="copyAll" class="btn dark">全体をコピー</button><button id="reset" class="btn dark">元に戻す</button></div></div>
+      <div class="editbody"><textarea id="editor" class="editor" spellcheck="false"></textarea><div class="actionrow"><span id="status" class="status">✓ SVGの形式は問題ありません</span><button id="run" class="btn primary">▶ 描画する</button></div></div>
+    </section>
+    <section class="panel preview-panel">
+      <div class="panelbar"><span>描画結果</span><small>ボタン操作は自動で描画されます</small></div>
+      <div class="previewbody"><div class="checker"><iframe id="preview" class="preview" sandbox="allow-scripts" title="SVGプレビュー"></iframe></div></div>
+    </section>
+  </div>
+</div>
+<div id="toast" class="toast"></div>
+<script>
+const samples={
+shapes:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400">
+  <rect width="600" height="400" fill="#ffffff"/>
+
+  <!-- ボタンで追加した図形は、この下に入ります -->
+</svg>`,
+move:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400">
+  <rect width="600" height="400" fill="#eef2ff"/>
+  <path d="M80 220 C190 70 410 70 520 220"
+        fill="none" stroke="#c7d2fe" stroke-width="18" stroke-linecap="round"/>
+
+  <!-- この丸に「移動を追加」できます -->
+  <circle id="moveTarget" cx="80" cy="220" r="28"
+          fill="#f97316" stroke="#9a3412" stroke-width="5"/>
+
+  <text x="300" y="340" text-anchor="middle" font-size="28"
+        font-family="sans-serif" font-weight="800" fill="#312e81">移動タグを追加してみよう</text>
+</svg>`,
+pulse:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400">
+  <rect width="600" height="400" fill="#0f172a"/>
+
+  <!-- このランプに「点滅を追加」できます -->
+  <g id="lampTarget">
+    <circle cx="170" cy="190" r="72" fill="#22c55e"/>
+    <circle cx="170" cy="190" r="88" fill="none" stroke="#86efac" stroke-width="8"/>
+  </g>
+
+  <!-- この図形に「回転を追加」できます -->
+  <g id="spinTarget">
+    <circle cx="430" cy="190" r="75" fill="#38bdf8"/>
+    <path d="M430 105 L450 155 L505 170 L455 195 L440 250 L415 200 L360 180 L410 160 Z" fill="#e0f2fe"/>
+  </g>
+
+  <text x="300" y="340" text-anchor="middle" font-size="28"
+        font-family="sans-serif" font-weight="800" fill="#f8fafc">点滅・回転を追加してみよう</text>
+</svg>`};
+let mode='shapes',selectedShapeIndex=-1,shapeRanges=[];
+const editor=document.getElementById('editor'),preview=document.getElementById('preview'),status=document.getElementById('status'),run=document.getElementById('run');
+function validate(v){const d=new DOMParser().parseFromString(v,'image/svg+xml');return d.querySelector('parsererror')?'SVGの書き方を確認してください':d.documentElement.tagName.toLowerCase()!=='svg'?'一番外側に <svg> が必要です':''}
+function scanShapes(){
+  const list=[];
+  const re=/<rect\b[^>]*\/>|<circle\b[^>]*\/>|<text\b[^>]*>[\s\S]*?<\/text>/g;
+  let m,index=0;
+  while((m=re.exec(editor.value))){
+    const tag=m[0];
+    const type=(tag.match(/^<(rect|circle|text)\b/)||[])[1];
+    if(!type)continue;
+    if(type==='rect' && /width="600"[^>]*height="400"/.test(tag))continue;
+    const id=(tag.match(/id="([^"]+)"/)||[])[1]||'';
+    const label=(tag.match(/>([^<]{1,24})<\/text>/)||[])[1]||'';
+    list.push({start:m.index,end:m.index+tag.length,tag,type,id,label,index:index++});
+  }
+  shapeRanges=list;
+  if(selectedShapeIndex>=list.length)selectedShapeIndex=list.length-1;
+  if(selectedShapeIndex<0&&list.length)selectedShapeIndex=list.length-1;
+  updateTargetSelector();
+  return list;
+}
+function updateTargetSelector(){}
+function previewSvgWithTargets(list){
+  let source=editor.value,offset=0;
+  list.forEach((x,i)=>{
+    const pos=x.start+offset;
+    const openEnd=source.indexOf('>',pos);
+    if(openEnd<0)return;
+    const insertAt=source[openEnd-1]==='/'?openEnd-1:openEnd;
+    const selected=i===selectedShapeIndex;
+    const attrs=` data-pg-index="${i}" data-pg-selected="${selected?'true':'false'}" style="cursor:pointer;${selected?'filter:drop-shadow(0 0 7px #7c3aed);':''}"`;
+    source=source.slice(0,insertAt)+attrs+source.slice(insertAt);
+    offset+=attrs.length;
+  });
+  return source;
+}
+function draw(selectStart=null,selectLength=0,message=''){
+  const e=validate(editor.value);status.textContent=e||'✓ SVGの形式は問題ありません';status.className='status'+(e?' err':'');run.disabled=!!e;if(e)return;
+  const list=scanShapes();
+  const svg=previewSvgWithTargets(list);
+  preview.srcdoc=`<!doctype html><html><head><meta charset="utf-8"><style>html,body{margin:0;width:100%;height:100%;display:grid;place-items:center}svg{width:100%;height:100%}</style></head><body>${svg}<script>document.addEventListener('click',e=>{const t=e.target.closest('[data-pg-index]');if(t)parent.postMessage({type:'pg-select',index:Number(t.dataset.pgIndex)},'*')})<\/script></body></html>`;
+  if(selectStart!==null){editor.focus();editor.setSelectionRange(selectStart,selectStart+selectLength);editor.scrollTop=Math.max(0,(editor.value.slice(0,selectStart).split('\n').length-4)*21);editor.classList.remove('flash');void editor.offsetWidth;editor.classList.add('flash')}
+  if(message)toast(message);
+}
+function selectShape(index,focusCode=false){
+  if(index<0||index>=shapeRanges.length)return;
+  selectedShapeIndex=index;updateTargetSelector();
+  const x=shapeRanges[index];
+  if(focusCode){editor.focus();editor.setSelectionRange(x.start,x.end);editor.scrollTop=Math.max(0,(editor.value.slice(0,x.start).split('\n').length-4)*21);editor.classList.remove('flash');void editor.offsetWidth;editor.classList.add('flash')}
+  draw();
+}
+window.addEventListener('message',e=>{if(e.data&&e.data.type==='pg-select')selectShape(Number(e.data.index),true)});
+function toast(t){const x=document.getElementById('toast');x.textContent=t;x.classList.add('show');setTimeout(()=>x.classList.remove('show'),1300)}
+function insertBeforeClose(code,message){const i=editor.value.lastIndexOf('</svg>');editor.value=editor.value.slice(0,i)+code+editor.value.slice(i);selectedShapeIndex=9999;draw(i,code.length,message)}
+function addShape(type){const code={rect:`  <rect x="80" y="90" width="180" height="110" rx="16" fill="#38bdf8"/>
+`,circle:`  <circle cx="390" cy="145" r="65" fill="#facc15"/>
+`,text:`  <text x="300" y="320" text-anchor="middle" font-size="32" fill="#172554">HELLO SVG</text>
+`}[type];insertBeforeClose(code,{rect:'四角のコードを追加しました',circle:'丸のコードを追加しました',text:'文字のコードを追加しました'}[type])}
+function selectControl(button){
+  const group=button.closest('.control-buttons');
+  if(group)group.querySelectorAll('.action').forEach(x=>x.classList.remove('selected'));
+  button.classList.add('selected');setTimeout(()=>button.classList.remove('selected'),900);
+}
+function getSelectedRange(){
+  scanShapes();
+  return selectedShapeIndex>=0&&selectedShapeIndex<shapeRanges.length?shapeRanges[selectedShapeIndex]:null;
+}
+function updateSelectedShape(transform,message){
+  const range=getSelectedRange();
+  if(!range){toast('操作する図形を選択してください');return}
+  const changed=transform(range.tag,range.type);
+  if(changed===range.tag){toast('この操作では変更できません');return}
+  editor.value=editor.value.slice(0,range.start)+changed+editor.value.slice(range.end);
+  draw(range.start,changed.length,message);
+}
+function changeNumeric(tag,name,amount,minValue=null){
+  const r=new RegExp(`${name}="(-?[0-9.]+)"`),m=tag.match(r);if(!m)return tag;
+  let value=Number(m[1])+amount;if(minValue!==null)value=Math.max(minValue,value);
+  return tag.replace(r,`${name}="${value}"`);
+}
+function moveLastShape(dx,dy){
+  updateSelectedShape((tag,type)=>{if(type==='circle'){tag=changeNumeric(tag,'cx',dx);tag=changeNumeric(tag,'cy',dy)}else{tag=changeNumeric(tag,'x',dx);tag=changeNumeric(tag,'y',dy)}return tag},'選択した図形の位置を変更しました');
+}
+function resizeLastShape(delta){
+  updateSelectedShape((tag,type)=>{if(type==='circle')return changeNumeric(tag,'r',delta,10);if(type==='rect'){tag=changeNumeric(tag,'width',delta,30);tag=changeNumeric(tag,'height',Math.round(delta*.65),20);return tag}return changeNumeric(tag,'font-size',delta,10)},delta>0?'選択した図形を大きくしました':'選択した図形を小さくしました');
+}
+function changeShapeColor(color){
+  updateSelectedShape(tag=>/fill="[^"]+"/.test(tag)?tag.replace(/fill="[^"]+"/,`fill="${color}"`):tag.replace(/^(<[^>]+)/,`$1 fill="${color}"`),'選択した図形の色を変更しました');
+}
+function replaceOnce(find,replacement,message){const i=editor.value.indexOf(find);if(i<0){toast('追加する対象が見つかりません');return}editor.value=editor.value.replace(find,replacement);const p=editor.value.indexOf(replacement);draw(p,replacement.length,message)}
+function addMotion(){
+  if(editor.value.includes('<animateMotion')){toast('移動タグは追加済みです');return}
+  const old='<circle id="moveTarget" cx="80" cy="220" r="28"\n          fill="#f97316" stroke="#9a3412" stroke-width="5"/>';
+  const neo='<circle id="moveTarget" r="28" fill="#f97316" stroke="#9a3412" stroke-width="5">\n    <animateMotion dur="3s" repeatCount="indefinite"\n      path="M80 220 C190 70 410 70 520 220"/>\n  </circle>';
+  replaceOnce(old,neo,'animateMotionを追加しました');
+}
+function stopMotion(){
+  const re=/<circle id="moveTarget"[\s\S]*?<\/circle>/;
+  if(!re.test(editor.value)){toast('移動は停止しています');return}
+  const stopped='<circle id="moveTarget" cx="80" cy="220" r="28"\n          fill="#f97316" stroke="#9a3412" stroke-width="5"/>';
+  editor.value=editor.value.replace(re,stopped);
+  const i=editor.value.indexOf('id="moveTarget"');
+  draw(i,stopped.length,'移動を停止しました');
+}
+function setMotionSpeed(sec){const m=editor.value.match(/<animateMotion[\s\S]*?dur="[^"]+"/);if(!m){toast('先に「移動を追加」を押してください');return}editor.value=editor.value.replace(/(<animateMotion[\s\S]*?dur=")[^"]+/,`$1${sec}`);const i=editor.value.indexOf(`dur="${sec}"`);draw(i,(`dur="${sec}"`).length,`移動時間を${sec}に変更しました`)}
+function addBlink(){if(editor.value.includes('<animate attributeName="opacity"')){toast('点滅タグは追加済みです');return}const mark='<g id="lampTarget">';const neo='<g id="lampTarget">\n    <animate attributeName="opacity" values="1;.18;1" dur=".8s" repeatCount="indefinite"/>';
+replaceOnce(mark,neo,'点滅タグを追加しました')}
+function stopBlink(){
+  const re=/\s*<animate attributeName="opacity"[\s\S]*?\/>/;
+  if(!re.test(editor.value)){toast('点滅は停止しています');return}
+  editor.value=editor.value.replace(re,'');
+  draw(null,0,'点滅を停止しました');
+}
+function setBlinkSpeed(sec){if(!editor.value.includes('attributeName="opacity"')){toast('先に「点滅を追加」を押してください');return}editor.value=editor.value.replace(/(<animate attributeName="opacity"[\s\S]*?dur=")[^"]+/,`$1${sec}`);const i=editor.value.indexOf(`dur="${sec}"`);draw(i,(`dur="${sec}"`).length,`点滅時間を${sec}に変更しました`)}
+function addSpin(){if(editor.value.includes('<animateTransform attributeName="transform"')){toast('回転タグは追加済みです');return}const mark='<g id="spinTarget">';const neo='<g id="spinTarget">\n    <animateTransform attributeName="transform" type="rotate"\n      from="0 430 190" to="360 430 190" dur="2s" repeatCount="indefinite" additive="replace"/>';
+replaceOnce(mark,neo,'回転タグを追加しました')}
+function stopSpin(){
+  const re=/\s*<animateTransform attributeName="transform"[\s\S]*?\/>/;
+  if(!re.test(editor.value)){toast('回転は停止しています');return}
+  editor.value=editor.value.replace(re,'');
+  draw(null,0,'回転を停止しました');
+}
+function setSpinSpeed(sec){if(!editor.value.includes('<animateTransform attributeName="transform"')){toast('先に「回転を追加」を押してください');return}editor.value=editor.value.replace(/(<animateTransform attributeName="transform"[\s\S]*?dur=")[^"]+/,`$1${sec}`);const i=editor.value.indexOf(`dur="${sec}"`);draw(i,(`dur="${sec}"`).length,`回転時間を${sec}に変更しました`)}
+function renderControls(){
+  const buttons=document.getElementById('controlButtons'),help=document.getElementById('help');
+  if(mode==='shapes'){
+    buttons.innerHTML='<div class="control-row"><span class="row-label">① 図形タグを追加</span><button class="action" data-shape="rect">&lt;rect&gt; 四角</button><button class="action" data-shape="circle">&lt;circle&gt; 丸</button><button class="action" data-shape="text">&lt;text&gt; 文字</button><span class="row-label">② 移動</span><span class="move-group"><button class="action" data-move="0,-20" title="上へ移動">↑</button><button class="action" data-move="-20,0" title="左へ移動">←</button><button class="action" data-move="20,0" title="右へ移動">→</button><button class="action" data-move="0,20" title="下へ移動">↓</button></span><span class="row-label">③ 大きさ・色</span><button class="action" data-size="-20">− 小さく</button><button class="action" data-size="20">＋ 大きく</button><button class="action color-blue" data-color="#38bdf8">青</button><button class="action color-pink" data-color="#ec4899">ピンク</button><button class="action green" data-color="#22c55e">緑</button><button class="action color-yellow" data-color="#facc15">黄</button></div>';
+    help.textContent='まずは「① 図形タグを追加」から、四角・丸・文字のどれかを追加してみましょう。追加した図形をクリックすると、移動・大きさ・色を変更できます。';
+    buttons.querySelectorAll('[data-shape]').forEach(b=>b.onclick=()=>{selectControl(b);addShape(b.dataset.shape)});
+    buttons.querySelectorAll('[data-color]').forEach(b=>b.onclick=()=>{selectControl(b);changeShapeColor(b.dataset.color)});
+    buttons.querySelectorAll('[data-move]').forEach(b=>b.onclick=()=>{selectControl(b);const [dx,dy]=b.dataset.move.split(',').map(Number);moveLastShape(dx,dy)});
+    buttons.querySelectorAll('[data-size]').forEach(b=>b.onclick=()=>{selectControl(b);resizeLastShape(Number(b.dataset.size))});
+  }else if(mode==='move'){
+    buttons.innerHTML='<div class="control-row"><span class="row-label">① 動作</span><button class="action orange" id="addMotion">＋ animateMotionを追加</button><button class="action stop" id="stopMotion">■ 停止</button><span class="row-label">② 速度</span><button class="action" data-ms="1s">速く 1s</button><button class="action" data-ms="3s">標準 3s</button><button class="action" data-ms="6s">ゆっくり 6s</button></div>';
+    help.textContent='① 動作を追加・停止し、② 速度を切り替えてコード内のdurの変化を確認できます。';
+    document.getElementById('addMotion').onclick=e=>{selectControl(e.currentTarget);addMotion()};
+    document.getElementById('stopMotion').onclick=e=>{selectControl(e.currentTarget);stopMotion()};
+    buttons.querySelectorAll('[data-ms]').forEach(b=>b.onclick=()=>{selectControl(b);setMotionSpeed(b.dataset.ms)});
+  }else{
+    buttons.innerHTML='<div class="control-row"><span class="row-label">① 点滅</span><button class="action green" id="addBlink">＋ 点滅を追加</button><button class="action" data-bs=".3s">速く</button><button class="action" data-bs="2s">ゆっくり</button><button class="action stop" id="stopBlink">■ 停止</button><span class="row-label">② 回転</span><button class="action orange" id="addSpin">＋ 回転を追加</button><button class="action" data-ss=".7s">速く</button><button class="action" data-ss="5s">ゆっくり</button><button class="action stop" id="stopSpin">■ 停止</button></div>';
+    help.textContent='① 点滅、② 回転の順に、追加・速度変更・停止をそれぞれ試せます。';
+    document.getElementById('addBlink').onclick=e=>{selectControl(e.currentTarget);addBlink()};
+    document.getElementById('stopBlink').onclick=e=>{selectControl(e.currentTarget);stopBlink()};
+    document.getElementById('addSpin').onclick=e=>{selectControl(e.currentTarget);addSpin()};
+    document.getElementById('stopSpin').onclick=e=>{selectControl(e.currentTarget);stopSpin()};
+    buttons.querySelectorAll('[data-bs]').forEach(b=>b.onclick=()=>{selectControl(b);setBlinkSpeed(b.dataset.bs)});
+    buttons.querySelectorAll('[data-ss]').forEach(b=>b.onclick=()=>{selectControl(b);setSpinSpeed(b.dataset.ss)});
+  }
+}
+function setMode(key){mode=key;selectedShapeIndex=-1;shapeRanges=[];document.querySelectorAll('[data-mode]').forEach(b=>b.classList.toggle('active',b.dataset.mode===key));editor.value=samples[key];draw();renderControls()}
+document.querySelectorAll('[data-mode]').forEach(b=>b.onclick=()=>setMode(b.dataset.mode));editor.oninput=()=>{const e=validate(editor.value);status.textContent=e||'✓ SVGの形式は問題ありません';status.className='status'+(e?' err':'');run.disabled=!!e};run.onclick=()=>draw();document.getElementById('reset').onclick=()=>setMode(mode);document.getElementById('copyAll').onclick=()=>navigator.clipboard.writeText(editor.value).then(()=>toast('SVGコードをコピーしました'));setMode('shapes');
+</script>
+</body></html>
