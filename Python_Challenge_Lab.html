@@ -57,6 +57,27 @@ function evaluateLoop(code,p,test){
 }
 function evaluateArithmetic(code,p,test){const c=code.replace(/\s+/g,' '),v=test.vars;switch(p.kind){
 case'minutesToSeconds':if(/minutes\s*\*\s*60|60\s*\*\s*minutes/.test(c))return String(v.minutes*60);break;case'secondsToMinutes':if(/seconds\s*\/\s*60/.test(c))return String(v.seconds/60);break;case'wage':if(/hourly_wage\s*\*\s*hours|hours\s*\*\s*hourly_wage/.test(c))return String(v.hourly_wage*v.hours);break;case'density':if(/mass\s*\/\s*volume/.test(c))return String(v.mass/v.volume);break;case'rectangle':if(/width\s*\*\s*height|height\s*\*\s*width/.test(c))return String(v.width*v.height);break;case'fare':if(/fare\s*\*\s*people|people\s*\*\s*fare/.test(c))return String(v.fare*v.people);break;case'priceCount':if(/price\s*\*\s*count|count\s*\*\s*price/.test(c))return String(v.price*v.count);break;case'change':if(/payment\s*-\s*price/.test(c))return String(v.payment-v.price);break;case'daysHours':if(/days\s*\*\s*24|24\s*\*\s*days/.test(c))return String(v.days*24);break;case'weeksDays':if(/days\s*\/\/\s*7/.test(c)&&/days\s*%\s*7/.test(c))return Math.floor(v.days/7)+'週'+v.days%7+'日';break;case'weekday':if(/today/.test(c)&&/after_days/.test(c)&&/%\s*7/.test(c))return String((v.today+v.after_days)%7);break;case'workHours':if(/end_hour/.test(c)&&/start_hour/.test(c)&&/break_hours/.test(c))return String(v.end_hour-v.start_hour-v.break_hours);break;case'dial':if(/target/.test(c)&&/current/.test(c)&&/%\s*10/.test(c))return String((v.target-v.current+10)%10);break}return null}
+function compareValues(left,operator,right){
+  if(operator==='<=')return left<=right;
+  if(operator==='>=')return left>=right;
+  if(operator==='<')return left<right;
+  if(operator==='>')return left>right;
+  if(operator==='==')return left===right;
+  if(operator==='!=')return left!==right;
+  return null;
+}
+function actualBusinessDayOutput(code,test){
+  const c=cleanCode(code);
+  const condition=c.match(/if\s+weekday\s*(<=|>=|==|!=|<|>)\s*(-?\d+)\s*:/);
+  if(!condition)return null;
+  const weekday=Number(test.vars.weekday);
+  const threshold=Number(condition[2]);
+  const result=compareValues(weekday,condition[1],threshold);
+  if(result===null)return null;
+  const prints=quotedPrints(c);
+  if(prints.length<2)return null;
+  return result?prints[0]:prints[prints.length-1];
+}
 function evaluateExtendedConditional(code,p,test){
   const c=cleanCode(code),v=test.vars;
   if(!/\bif\b/.test(c))return null;
@@ -71,8 +92,7 @@ function evaluateExtendedConditional(code,p,test){
       if(!/age/.test(c)||!/12/.test(c)||!/18/.test(c))return null;
       return String(v.age<12?800:v.age<18?1200:1800);
     case'businessDay':
-      if(!/weekday/.test(c)||!/5/.test(c))return null;
-      return v.weekday<5?'営業日':'休日';
+      return actualBusinessDayOutput(c,test);
     case'parcelSize':{
       if(!/length/.test(c)||!/width/.test(c)||!/height/.test(c)||!/60/.test(c)||!/100/.test(c))return null;
       let size=v.length+v.width+v.height;return size<=60?'S':size<=100?'M':'L';}
