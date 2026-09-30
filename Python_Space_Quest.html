@@ -37,6 +37,22 @@ function resetSpecial(){$('fuelGauge').classList.remove('show');$('gfill')?.clas
 function vis(c){resetSpecial();let r=$('rocket');let landing=c.includes('altitude = 100')||c.includes('descend(')||c.includes('deploy_legs()')||c.includes('TOUCHDOWN')||c.includes('plant_flag()')||c.includes('LANDING COMPLETE');r.style.display=(c.includes('rocket()')||landing)?'block':'none';r.className='rocket '+(c.includes('launch()')?'launch ':'')+(c.includes('rotate(15)')?'bank ':'')+(c.includes('color("cyan")')?'cyan ':'')+(landing?'landing ':'');r.style.bottom=(54+(c.includes('range(8)')?312:c.includes('move_up(1)')?39:0))+'px';r.style.left=(73+(c.includes('move_right(3)')?144:0))+'px';let hasStarField=c.includes('range(30)')&&c.includes('star()');let hasSingleStar=c.includes('star()');$('space').classList.toggle('deep',c.includes('star()')||c.includes('planet()'));$('space').querySelector('.stars').style.opacity=hasStarField?'1':'.05';$('singleStar').classList.toggle('show',hasSingleStar);$('planet').style.display=c.includes('planet()')?'block':'none';$('planet').style.transform=c.includes('grow()')?'scale(1.2)':'none';$('moon').style.display=c.includes('moon()')?'block':'none';$('station').style.display=c.includes('station()')?'block':'none';$('solar').style.display=c.includes('solar()')?'block':'none';$('antenna').style.display=c.includes('antenna()')?'block':'none';$('robots').innerHTML='';$('landingGround').classList.toggle('show',landing);$('altPanel').classList.toggle('show',landing);$('lander').classList.remove('show');if(landing){let altitude=c.includes('altitude = 0')?0:c.includes('descend(10)')?5:c.includes('descend(30)')?30:c.includes('descend(60)')?60:100;$('altText').textContent='高度 '+altitude;$('altFill').style.width=altitude+'%';$('speedText').textContent=c.includes('speed = 8')?'降下速度: 8（安全）':'降下速度: 20';r.style.left='48%';r.style.bottom=(62+altitude*4.2)+'px';r.classList.toggle('landing',c.includes('deploy_legs()')||c.includes('descend(10)')||c.includes('TOUCHDOWN')||c.includes('plant_flag()')||c.includes('LANDING COMPLETE'));r.classList.toggle('touch',altitude===0);$('flag').classList.toggle('show',c.includes('plant_flag()'));$('cert').classList.toggle('show',c.includes('LANDING COMPLETE')&&cur===S.length-1)}}
 async function special(){if(cur===45){$('fuelGauge').classList.add('show');$('fuelFill').style.width='0';$('fuelResult').textContent='測定中...';await new Promise(r=>setTimeout(r,150));$('fuelFill').style.width='100%';await new Promise(r=>setTimeout(r,1500));$('fuelResult').textContent='✅ 100 ≥ 80：基準を20上回っています。着陸噴射可能です。'}if(cur===46){let e=$('count');e.classList.add('show');for(let n=5;n>=1;n--){e.textContent=n;await new Promise(r=>setTimeout(r,800))}e.textContent='LANDING BURN';await new Promise(r=>setTimeout(r,1100));e.classList.remove('show')}if(cur===53){$('touchdown').classList.add('show');await new Promise(r=>setTimeout(r,1500));$('touchdown').classList.remove('show')}}
 function simulateConsole(code){
+  // 関数ステージは、定義内のprintを直接実行せず、関数を呼び出した結果だけを表示します。
+  if(/def\s+greet\s*\(\s*\)\s*:/.test(code)&&/greet\s*\(\s*\)/.test(code))return 'こんにちは';
+  const greetArg=code.match(/def\s+greet\s*\(\s*(\w+)\s*\)\s*:[\s\S]*?greet\s*\(\s*["']([^"']*)["']\s*\)/);
+  if(greetArg)return greetArg[2];
+  const addCall=code.match(/def\s+add\s*\(\s*(\w+)\s*,\s*(\w+)\s*\)\s*:[\s\S]*?return\s+\1\s*\+\s*\2[\s\S]*?print\s*\(\s*add\s*\(\s*(-?\d+(?:\.\d+)?)\s*,\s*(-?\d+(?:\.\d+)?)\s*\)\s*\)/);
+  if(addCall)return String(Number(addCall[3])+Number(addCall[4]));
+  const checkCall=code.match(/def\s+check\s*\(\s*(\w+)\s*\)\s*:[\s\S]*?check\s*\(\s*\[([^\]]*)\]\s*\)/);
+  if(checkCall){
+    const scores=checkCall[2].split(',').map(x=>Number(x.trim())).filter(x=>!Number.isNaN(x));
+    const thresholdMatch=code.match(/if\s+score\s*>=\s*(-?\d+(?:\.\d+)?)\s*:/);
+    const textMatch=code.match(/if\s+score[\s\S]*?print\s*\(\s*["']([^"']*)["']\s*\)/);
+    if(thresholdMatch&&textMatch){
+      const lines=scores.filter(score=>score>=Number(thresholdMatch[1])).map(()=>textMatch[1]);
+      return lines.length?lines.join('\n'):'（出力はありません）';
+    }
+  }
   const scoreMatch=code.match(/score\s*=\s*(-?\d+)/);
   const scoreIfMatch=code.match(/if\s+score\s*>=\s*(-?\d+)\s*:/);
   const passPrint=code.match(/if\s+score[\s\S]*?print\(["']([^"']+)["']\)/);
@@ -51,8 +67,8 @@ function simulateConsole(code){
   const strip=s=>s.trim().replace(/^['"]|['"]$/g,'');
   function value(expr){
     expr=expr.trim();
-    if(expr==='True')return true;
-    if(expr==='False')return false;
+    if(expr==='True')return 'True';
+    if(expr==='False')return 'False';
     if(/^f["']/.test(expr)){
       let text=expr.slice(2,-1);
       return text.replace(/\{([^}]+)\}/g,(_,k)=>String(vars[k.trim()]??''));
@@ -64,7 +80,7 @@ function simulateConsole(code){
     if(m)return vars[m[1]]?.[Number(m[2])];
     m=expr.match(/^add\((\d+)\s*,\s*(\d+)\)$/);
     if(m)return Number(m[1])+Number(m[2]);
-    if(vars[expr]!==undefined)return vars[expr];
+    if(vars[expr]!==undefined){const stored=vars[expr];if(Array.isArray(stored))return '['+stored.map(x=>'\"'+x+'\"').join(', ')+']';return stored;}
     const substituted=expr.replace(/\b[A-Za-z_]\w*\b/g,k=>typeof vars[k]==='number'?String(vars[k]):k);
     if(/^[\d\s+\-*/().]+$/.test(substituted)){
       try{return Function('"use strict";return ('+substituted+')')()}catch(e){}
@@ -99,9 +115,6 @@ function simulateConsole(code){
       if(print&&Array.isArray(vars[m[2]])){for(const item of vars[m[2]]){vars[m[1]]=item;out.push(String(value(print[1])))}i++;}
     }
   }
-  if(code.includes('greet()')&&!out.includes('こんにちは'))out.push('こんにちは');
-  if(code.includes('greet("Sample")')&&!out.includes('Sample'))out.push('Sample');
-  if(code.includes('print(add(10, 20))')&&!out.includes('30'))out.push('30');
   if(code.includes('age = 20')&&code.includes('ticket = True')&&!out.includes('入場できます'))out.push('入場できます');
   return out.length?out.join('\n'):'（出力はありません）';
 }
