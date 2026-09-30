@@ -132,6 +132,51 @@ function evaluateExtendedFunction(code,p,test){
   return compute(p,test);
 }
 function validateNewProblem(code,p){if(p.id<=100)return true;let c=code.replace(/\s+/g,' ');return (p.req||[]).every(token=>c.includes(token))}
+function getPythonValue(token,vars){
+  token=token.trim();
+  if(/^[-+]?\d+(?:\.\d+)?$/.test(token))return Number(token);
+  if((token.startsWith('"')&&token.endsWith('"'))||(token.startsWith("'")&&token.endsWith("'")))return token.slice(1,-1);
+  const lenMatch=token.match(/^len\s*\(\s*([A-Za-z_]\w*)\s*\)$/);
+  if(lenMatch&&Object.prototype.hasOwnProperty.call(vars,lenMatch[1]))return vars[lenMatch[1]].length;
+  const modMatch=token.match(/^([A-Za-z_]\w*)\s*%\s*([-+]?\d+(?:\.\d+)?)$/);
+  if(modMatch&&Object.prototype.hasOwnProperty.call(vars,modMatch[1]))return Number(vars[modMatch[1]])%Number(modMatch[2]);
+  const dictMatch=token.match(/^([A-Za-z_]\w*)\s*\[\s*([A-Za-z_]\w*)\s*\]$/);
+  if(dictMatch&&vars[dictMatch[1]]!=null)return vars[dictMatch[1]][vars[dictMatch[2]]];
+  if(Object.prototype.hasOwnProperty.call(vars,token))return vars[token];
+  return undefined;
+}
+function evaluateAtomicPythonCondition(expression,vars){
+  let exp=expression.trim();
+  const starts=exp.match(/^([A-Za-z_]\w*)\.startswith\s*\(\s*(["'])(.*?)\2\s*\)$/);
+  if(starts&&typeof vars[starts[1]]==='string')return vars[starts[1]].startsWith(starts[3]);
+  const inMatch=exp.match(/^([A-Za-z_]\w*)\s+(not\s+in|in)\s+([A-Za-z_]\w*)$/);
+  if(inMatch){const left=vars[inMatch[1]],right=vars[inMatch[3]];if(right==null||typeof right.includes!=='function')return null;const found=right.includes(left);return inMatch[2].replace(/\s+/g,' ')==='in'?found:!found;}
+  const comparison=exp.match(/^(.+?)\s*(<=|>=|==|!=|<|>)\s*(.+)$/);
+  if(!comparison)return null;
+  const left=getPythonValue(comparison[1],vars),right=getPythonValue(comparison[3],vars);
+  if(left===undefined||right===undefined)return null;
+  return compareValues(left,comparison[2],right);
+}
+function evaluatePythonCondition(expression,vars){
+  const orParts=expression.split(/\s+or\s+/);
+  if(orParts.length>1){let values=orParts.map(x=>evaluatePythonCondition(x,vars));return values.includes(null)?null:values.some(Boolean);}
+  const andParts=expression.split(/\s+and\s+/);
+  if(andParts.length>1){let values=andParts.map(x=>evaluatePythonCondition(x,vars));return values.includes(null)?null:values.every(Boolean);}
+  return evaluateAtomicPythonCondition(expression,vars);
+}
+function evaluateActualBinaryIf(code,p,test){
+  const supported=new Set(['score','parity','adult','shipping','temperature','inRange','overtime','passwordLength','businessDay','parkingFee','points','login','listSearch','httpsCheck','dictPhone','dictRole','palindrome','stringPostal','stringProductCode','setDuplicate']);
+  if(!supported.has(p.kind))return null;
+  const c=cleanCode(code);
+  if(/\belif\b/.test(c))return null;
+  const conditionMatch=c.match(/\bif\s+([^:\n]+):/);
+  if(!conditionMatch)return null;
+  const result=evaluatePythonCondition(conditionMatch[1],test.vars||{});
+  if(result===null)return null;
+  const prints=quotedPrints(c);
+  if(prints.length<2)return null;
+  return result?prints[0]:prints[prints.length-1];
+}
 function evaluateRemainingSpecialCases(code,p,test){
   const c=cleanCode(code);
   const requirements={
@@ -150,6 +195,8 @@ function evaluateRemainingSpecialCases(code,p,test){
 }
 function evaluateSubmitted(code,p,test){
   if(!code.trim())return '（出力なし）';
+  const actualBinary=evaluateActualBinaryIf(code,p,test);
+  if(actualBinary!==null)return actualBinary;
   const special=evaluateRemainingSpecialCases(code,p,test);
   if(special!==null)return special;
   const extendedFunction=evaluateExtendedFunction(code,p,test);
